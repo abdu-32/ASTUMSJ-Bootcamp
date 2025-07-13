@@ -2,13 +2,11 @@ const taskInput = document.getElementById('taskInput');
 const addBtn = document.getElementById('addBtn');
 const taskList = document.getElementById('taskList');
 const emptyState = document.getElementById('emptyState');
-// Task array to store all tasks
 let tasks = [];
-// Initialize the application
+
 document.addEventListener('DOMContentLoaded', function() {
     loadTasksFromStorage();
     renderTasks(); 
-    // Event listeners
     addBtn.addEventListener('click', addTask);
     taskInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
@@ -16,42 +14,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-// Add new task function
 function addTask() {
     const taskText = taskInput.value.trim();
     if (taskText === '') {
         alert('Please enter a task!');
         return;
     }
-    // Create new task object
     const newTask = {
-        id: Date.now(), // Simple ID generation
+        id: Date.now(),
         text: taskText,
         completed: false,
         createdAt: new Date().toISOString()
     };
-    // Add to tasks array
-    tasks.unshift(newTask); // Add to beginning for newest first
-    // Clear input
+    tasks.unshift(newTask); 
     taskInput.value = '';
-    // Save to localStorage and re-render
     saveTasksToStorage();
     renderTasks();
-    // Focus back to input for better UX
     taskInput.focus();
 }
 // Render all tasks
 function renderTasks() {
-    // Clear current list
     taskList.innerHTML = '';
-    // Show/hide empty state
     if (tasks.length === 0) {
         emptyState.classList.add('show');
         return;
     } else {
         emptyState.classList.remove('show');
     }
-    // Create task elements
     tasks.forEach((task, index) => {
         const taskItem = createTaskElement(task, index);
         taskList.appendChild(taskItem);
@@ -75,7 +64,6 @@ function createTaskElement(task, index) {
     `;
     return li;
 }
-// Remove task
 function removeTask(taskId) {
     // Optional: Add confirmation for important tasks
     const task = tasks.find(t => t.id === taskId);
@@ -103,7 +91,6 @@ function loadTasksFromStorage() {
         if (storedTasks) {
             tasks = JSON.parse(storedTasks);
             
-            // Validate loaded data
             tasks = tasks.filter(task => 
                 task && 
                 typeof task.id !== 'undefined' && 
@@ -113,10 +100,9 @@ function loadTasksFromStorage() {
         }
     } catch (error) {
         console.error('Error loading tasks from localStorage:', error);
-        tasks = []; // Reset to empty array if loading fails
+        tasks = [];
     }
 }
-// Utility function to escape HTML to prevent XSS
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
