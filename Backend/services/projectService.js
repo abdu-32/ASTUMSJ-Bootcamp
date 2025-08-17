@@ -1,41 +1,41 @@
-const { projects, nextId } = require("../data/projects");
+const projectsData = require("../data/projects");
 
 // GET ALL PROJECTS
 const getAllProjects = () => {
-  return projects;
+  return projectsData.projects;
 };
 
 // GET SINGLE PROJECT BY ID
 const getProjectById = (id) => {
-  return projects.find((project) => project.id === Number(id));
+  return projectsData.projects.find((project) => project.id === Number(id));
 };
 
 // CREATE NEW PROJECT
 const createProject = (projectData) => {
   const newProject = {
-    id: nextId,
+    id: projectsData.nextId,
     ...projectData,
   };
-  projects.push(newProject);
-  nextId++;
+  projectsData.projects.push(newProject);
+  projectsData.nextId++;
   return newProject;
 };
 
 // UPDATE PROJECT
 const updateProject = (id, projectData) => {
-  const index = projects.findIndex((project) => project.id === Number(id));
+  const index = projectsData.projects.findIndex((project) => project.id === Number(id));
   if (index !== -1) {
-    projects[index] = { ...projects[index], ...projectData };
-    return projects[index];
+    projectsData.projects[index] = { ...projectsData.projects[index], ...projectData };
+    return projectsData.projects[index];
   }
   return null;
 };
 
 // DELETE PROJECT
 const deleteProject = (id) => {
-  const index = projects.findIndex((project) => project.id === Number(id));
+  const index = projectsData.projects.findIndex((project) => project.id === Number(id));
   if (index !== -1) {
-    return projects.splice(index, 1)[0];
+    return projectsData.projects.splice(index, 1)[0];
   }
   return null;
 };

@@ -56,27 +56,38 @@ projectForm.addEventListener("submit", async (e) => {
   const status = document.getElementById("status").value;
 
   try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, description, status }),
-    });
+    if (editingProjectId) {
+      // Edit mode: send PUT request
+      const response = await fetch(`${API_URL}/${editingProjectId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, description, status }),
+      });
+      if (!response.ok) throw new Error("Failed to update project");
+      editingProjectId = null;
+    } else {
+      // Create mode: send POST request
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, description, status }),
+      });
+      if (!response.ok) throw new Error("Failed to add project");
+    }
 
-    if (!response.ok) throw new Error("Failed to add project");
-
-    // RESET FORM AND REFRESH PROJECT LIST
     projectForm.reset();
     fetchProjects();
   } catch (error) {
     console.error("Error:", error);
-    alert("Failed to add project. Please try again.");
+    alert("Failed to save project. Please try again.");
   }
 });
 
-
-
+// DELETE PROJECT FUNCTIONALITY
 async function deleteProject(id) {
   if (!confirm("Are you sure you want to delete this project?")) return;
 
@@ -94,7 +105,32 @@ async function deleteProject(id) {
   }
 }
 
+let editingProjectId = null;
 
+// EDIT PROJECT FUNCTIONALITY
 function editProject(id) {
-  alert(`Edit functionality for project ${id} would be implemented here`);
+  const project = Array.from(
+    projectsContainer.querySelectorAll(".project-card")
+  )
+    .map((card) => ({
+      id: Number(
+        card
+          .querySelector('button[onclick^="editProject"]')
+          .getAttribute("onclick")
+          .match(/\d+/)[0]
+      ),
+      name: card.querySelector("h3").textContent,
+      description: card.querySelector("p").textContent,
+      status: card
+        .querySelector('p[class^="status-"]')
+        .textContent.replace("Status: ", ""),
+    }))
+    .find((p) => p.id === id);
+
+  if (project) {
+    document.getElementById("name").value = project.name;
+    document.getElementById("description").value = project.description;
+    document.getElementById("status").value = project.status;
+    editingProjectId = id;
+  }
 }
